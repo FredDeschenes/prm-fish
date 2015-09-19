@@ -6,6 +6,7 @@ Port of [prm](https://github.com/eivind88/prm) for the fish shell
 - Needs to be sourced in your config.fish (```. /path/to/prm.fish```)
 - Project files are saved in ```~/.prm-fish/``` instead of ```~/.prm/```
 - Does not change prompt to include project name
+- 'add', 'edit' and 'remove' commands can accept multiple projects at once
 
 Feel free to report any other differences in the [issue tracker](../../issues/).
 
