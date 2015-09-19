@@ -3,10 +3,11 @@ Port of [prm](https://github.com/eivind88/prm) for the fish shell
 
 ## Differences
 - Works on fish (who would have thought?)
-- Needs to be sourced in your config.fish (```. /path/to/prm.fish```)
+- Needs to be sourced in your config.fish (```. /path/to/prm.fish```) or copied/moved to ~/.config/fish/functions/
 - Project files are saved in ```~/.prm-fish/``` instead of ```~/.prm/```
 - Does not change prompt to include project name
 - 'add', 'edit' and 'remove' commands can accept multiple projects at once
+- Currently leaks files for open projects if the shell is closed without stopping the project
 
 Feel free to report any other differences in the [issue tracker](../../issues/).
 

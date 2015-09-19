@@ -1,3 +1,4 @@
 - Change prompt to display current project (look at what virtualfish/virtualenv does)
 - Add autocompletion (again, look at virtualfish)
 - Test more thoroughly
+- Remove unused files for closed shells
