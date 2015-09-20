@@ -196,7 +196,21 @@ function __prm_start
     end
 
     echo $project_name > $active_file
-    #TODO: Change prompt to display project name (like virtualfish)
+
+    # Save fish_prompt as _old_fish_prompt
+    # Technique found in virtualenv
+    . ( begin
+            printf "function _old_fish_prompt\n\t#"
+            functions fish_prompt
+        end | psub )
+
+    # Replace with our own
+    function fish_prompt
+        set -l pid %self
+        set -l active_file "$prm_fish_dir/.active-$pid.tmp"
+        printf "[%s] %s" (cat $active_file) (_old_fish_prompt)
+    end
+
     echo "Starting project $project_name."
     . $project_dir/start.fish
 end
@@ -220,7 +234,12 @@ function __prm_stop
     cd (cat $prm_fish_dir/.path-$pid.tmp)
     rm $prm_fish_dir/.path-$pid.tmp
 
-    # TODO: Change prompt back
+    # Reset old prompt
+    . ( begin
+                printf "function fish_prompt\n\t#"
+                functions _old_fish_prompt
+            end | psub )
+    functions -e _old_fish_prompt
 
     . $project_dir/stop.fish
     return 0 # No idea why this is needed
