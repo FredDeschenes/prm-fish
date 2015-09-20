@@ -246,4 +246,10 @@ function __prm_help
     echo "I.e. '. /path/to/prm', most likely in your config.fish"
 end
 
+function __prm_on_shell_exit --on-process %self
+    set -l pid %self
+    rm -f $prm_fish_dir/.active-$pid.tmp
+    rm -f $prm_fish_dir/.path-$pid.tmp
+end
+
 #TODO: Setup autocompletion like virtualfish
