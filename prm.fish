@@ -3,7 +3,11 @@ function prm
 
     if functions -q $func_to_call
         if not set -q prm_fish_dir
-            set -g prm_fish_dir $HOME/.prm-fish
+            if set -q PRM_FISH_DIR
+                set -g prm_fish_dir $PRM_FISH_DIR
+            else
+                set -g prm_fish_dir $HOME/.prm-fish
+            end
         end
 
         if not test -d $prm_fish_dir
