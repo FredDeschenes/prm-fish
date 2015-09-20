@@ -26,15 +26,22 @@ function prm
     end
 end
 
+function __prm_cleanup --on-event __prm_clean_process
+    rm -f $prm_fish_dir/.active-$argv[1].tmp
+    rm -f $prm_fish_dir/.path-$argv[1].tmp
+end
+
 function __prm_active
     cd $prm_fish_dir
     for instance in (ls .active*)
         set -l pid (echo $instance | sed 's/.active-\([0-9]*\).tmp/\1/')
-        echo $pid (cat $instance)
-        # FIXME: Why isn't this working???
-        #if test (ps -p $pid > /dev/null 2>&1)
-        #    echo $pid (cat $instance)
-        #end
+        ps cax | grep $pid > /dev/null
+
+        if test $status -eq 0
+            echo $pid (cat $instance)
+        else
+            emit __prm_clean_process $pid
+        end
     end
     prevd
 end
@@ -231,12 +238,11 @@ function __prm_stop
     set project_name (cat $active_file)
     set -l project_dir "$prm_fish_dir/$project_name"
 
-    rm $active_file
-
     echo "Stopping project $project_name."
 
     cd (cat $prm_fish_dir/.path-$pid.tmp)
-    rm $prm_fish_dir/.path-$pid.tmp
+
+    emit __prm_clean_process $pid
 
     # Reset old prompt
     . ( begin
@@ -270,9 +276,7 @@ function __prm_help
 end
 
 function __prm_on_shell_exit --on-process %self
-    set -l pid %self
-    rm -f $prm_fish_dir/.active-$pid.tmp
-    rm -f $prm_fish_dir/.path-$pid.tmp
+    emit __prm_clean_process %self
 end
 
 #TODO: Setup autocompletion like virtualfish
