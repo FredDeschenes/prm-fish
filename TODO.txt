@@ -1,2 +1,0 @@
-- Add autocompletion (again, look at virtualfish)
-- Test more thoroughly

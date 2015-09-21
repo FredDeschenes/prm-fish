@@ -1,4 +1,4 @@
-function prm
+function prm --description "Simple project management tool"
     set -l func_to_call "__prm_$argv[1]"
 
     if functions -q $func_to_call
@@ -26,12 +26,12 @@ function prm
     end
 end
 
-function __prm_cleanup --on-event __prm_clean_process
+function __prmcleanup --on-event __prm_clean_process
     rm -f $prm_fish_dir/.active-$argv[1].tmp
     rm -f $prm_fish_dir/.path-$argv[1].tmp
 end
 
-function __prm_active
+function __prm_active --description "List active projects and shell process id"
     cd $prm_fish_dir
     for instance in (ls .active*)
         set -l pid (echo $instance | sed 's/.active-\([0-9]*\).tmp/\1/')
@@ -46,7 +46,7 @@ function __prm_active
     prevd
 end
 
-function __prm_add
+function __prm_add --description "Creates new project(s)"
     if test (count $argv) -lt 1
         echo "No name given"
         return 1
@@ -79,7 +79,7 @@ function __prm_add
     end
 end
 
-function __prm_edit
+function __prm_edit --description "Edit existing project(s)"
     if test (count $argv) -lt 1
         echo "No name given."
         return 1
@@ -97,19 +97,18 @@ function __prm_edit
     end
 end
 
-function __prm_list
+function __prm_list --description "List existing projects"
     if not test (find $prm_fish_dir -type d | wc -l) -gt 1
         echo "No projects exist."
     else
-        cd $prm_fish_dir/
-        for d in (ls -d *)
-            echo $d
+        # set -l pid (echo $instance | sed 's/.active-\([0-9]*\).tmp/\1/')
+        for d in (ls -d $prm_fish_dir/*)
+            echo (basename $d)
         end
-        prevd
     end
 end
 
-function __prm_remove
+function __prm_remove --description "Remove existing project(s)"
     if test (count $argv) -lt 1
         echo "No name given."
         return 1
@@ -137,7 +136,7 @@ function __prm_remove
     end
 end
 
-function __prm_rename
+function __prm_rename --description "Rename existing project"
     if test (count $argv) -lt 1
         echo "No name given."
         return 1
@@ -176,7 +175,7 @@ function __prm_rename
     mv $old_project_dir $new_project_dir
 end
 
-function __prm_start
+function __prm_start --description "Start project"
     if test (count $argv) -lt 1
         echo "No name given."
         return 1
@@ -226,7 +225,7 @@ function __prm_start
     . $project_dir/start.fish
 end
 
-function __prm_stop
+function __prm_stop --description "Stop active project"
     set -l pid %self
     set -l active_file "$prm_fish_dir/.active-$pid.tmp"
 
@@ -255,7 +254,7 @@ function __prm_stop
     return 0 # No idea why this is needed
 end
 
-function __prm_help
+function __prm_help --description "Prints help message"
     echo "Usage: prm [options] ..."
     echo "Options:"
     echo "  active                   List active project instances."
@@ -275,8 +274,40 @@ function __prm_help
     echo "I.e. '. /path/to/prm', most likely in your config.fish"
 end
 
-function __prm_on_shell_exit --on-process %self
+function __prmshellexit --on-process %self
     emit __prm_clean_process %self
 end
 
-#TODO: Setup autocompletion like virtualfish
+# Autocompletion setup
+# Based on virtualfish https://github.com/adambrenecki/virtualfish
+function __prmcompletion_setup --on-event prm_setup
+    function __prmcompletion_needs_command
+        set cmd (commandline -opc)
+            if test (count $cmd) -eq 1 -a $cmd[1] = 'prm'
+            return 0
+        end
+        return 1
+    end
+
+    function __prmcompletion_using_command
+        echo "Using command $argv"
+        set cmd (commandline -opc)
+        if test (count $cmd) -gt 1
+            if test $argv[1] = $cmd[2]
+                return 0
+            end
+        end
+        return 1
+    end
+
+    # add completion for subcommands
+    for sc in (functions -a | sed -n '/__prm_/{s///g;p;}')
+        set -l helptext (functions "__prm_$sc" | head -n 1 | sed -E "s|.*'(.*)'.*|\1|")
+        complete -x -c prm -n '__prmcompletion_needs_command' -a $sc -d $helptext
+    end
+
+    complete -x -c prm -n '__prmcompletion_using_command edit' -a "(prm list)"
+    complete -x -c prm -n '__prmcompletion_using_command remove' -a "(prm list)"
+    complete -x -c prm -n '__prmcompletion_using_command rename' -a "(prm list)"
+    complete -x -c prm -n '__prmcompletion_using_command start' -a "(prm list)"
+end

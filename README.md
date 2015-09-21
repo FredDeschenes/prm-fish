@@ -1,9 +1,18 @@
 # prm-fish
 Port of [prm](https://github.com/eivind88/prm) for the fish shell
 
+## Installation
+Add the following to your config.fish
+```sh
+# Load prm-fish
+. /path/to/prm.fish
+# Enable prm-fish completions
+emit prm_setup
+```
+Although copying/symlinking ```prm.fish``` to ```~/.config/fish/functions/``` will work, autocompletions will not be available.
+
 ## Differences
 - Works on fish (who would have thought?)
-- Needs to be sourced in your config.fish (```. /path/to/prm.fish```) or copied/moved/symlinked to ```~/.config/fish/functions/```
 - Project files are saved in ```~/.prm-fish/``` instead of ```~/.prm/```
 - Project scripts directory can be set with ```PRM_FISH_DIR``` instead of ```PRM_DIR``` (shell will need to be restarted for change to take effect)
 
