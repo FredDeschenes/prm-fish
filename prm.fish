@@ -138,6 +138,35 @@ function __prm_remove --description "Remove existing project(s)"
     end
 end
 
+function __prm_copy --description "Copies a project"
+    if test (count $argv) -lt 1
+        echo "No name given."
+        return 1
+    else if test (count $argv) -lt 2
+        echo "No new name given."
+        return 1
+    end
+
+    set -l old_project_name "$argv[1]"
+    set -l old_project_dir "$prm_fish_dir/$old_project_name"
+
+    if not test -d $old_project_dir
+        echo "$old_project_name: No such project."
+        return 2
+    end
+
+    set -l new_project_name "$argv[2]"
+    set -l new_project_dir "$prm_fish_dir/$new_project_name"
+
+    if test -d $new_project_dir
+        echo "Project $new_project_name already exists."
+        return 3
+    end
+
+    cp -r $old_project_dir $new_project_dir
+    prm edit $new_project_name
+end
+
 function __prm_rename --description "Rename existing project"
     if test (count $argv) -lt 1
         echo "No name given."
@@ -310,6 +339,7 @@ function __prmcompletion_setup --on-event prm_setup
 
     complete -x -c prm -n '__prmcompletion_using_command edit' -a "(prm list)"
     complete -x -c prm -n '__prmcompletion_using_command remove' -a "(prm list)"
+    complete -x -c prm -n '__prmcompletion_using_command copy' -a "(prm list)"
     complete -x -c prm -n '__prmcompletion_using_command rename' -a "(prm list)"
     complete -x -c prm -n '__prmcompletion_using_command start' -a "(prm list)"
 end
