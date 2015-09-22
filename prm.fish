@@ -198,9 +198,11 @@ function __prm_rename --description "Rename existing project"
 
     set -l active_file "$prm_fish_dir/.active-$pid.tmp"
 
-    if test -e $active_file; and test (cat $active_file) -eq $project_name
-        echo "Stop project $project_name before trying to rename it."
-        return 4
+    if test -e $active_file
+        if test (cat $active_file) = $project_name
+            echo "Stop project $project_name before trying to rename it."
+            return 4
+        end
     end
 
     mv $old_project_dir $new_project_dir
