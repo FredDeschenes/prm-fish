@@ -118,20 +118,22 @@ function __prm_remove --description "Remove existing project(s)"
         set -l project_dir "$prm_fish_dir/$project_name"
 
         set -l pid %self
-        set -l project_name $argv[1]
         set -l project_dir "$prm_fish_dir/$project_name"
 
         set -l active_file "$prm_fish_dir/.active-$pid.tmp"
 
-        if test -e $active_file; and test (cat $active_file) -eq $project_name
-            echo "Stop project $project_name before trying to remove it."
-        else
-            if test -d $project_dir
-                rm -rf $project_dir
-                echo "Removed project $project_name."
-            else
-                echo "$project_name: No such project."
+        if test -e $active_file
+            if test (cat $active_file) = $project_name
+                echo "Stop project $project_name before trying to remove it."
+                return 2
             end
+        end
+
+        if test -d $project_dir
+            rm -rf $project_dir
+            echo "Removed project $project_name."
+        else
+            echo "$project_name: No such project."
         end
     end
 end
