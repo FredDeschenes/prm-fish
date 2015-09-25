@@ -15,6 +15,7 @@ Although copying/symlinking ```prm.fish``` to ```~/.config/fish/functions/``` wi
 - Works on fish (who would have thought?)
 - Project files are saved in ```~/.prm-fish/``` instead of ```~/.prm/```
 - Project scripts directory can be set with ```PRM_FISH_DIR``` instead of ```PRM_DIR``` (shell will need to be restarted for change to take effect)
+- Specyfing aditional arguments to 'start' does not work
 
 Feel free to report any other differences in the [issue tracker](../../issues/).
 
