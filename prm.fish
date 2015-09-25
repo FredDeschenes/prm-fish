@@ -14,6 +14,10 @@ function prm --description "Simple project management tool"
             mkdir -p $prm_fish_dir
         end
 
+        if not test -d $prm_fish_dir/.common
+            mkdir -p $prm_fish_dir/.common
+        end
+
         set -l scargs
 
         if test (count $argv) -gt 1
@@ -287,6 +291,22 @@ function __prm_stop --description "Stop active project"
     return 0 # No idea why this is needed
 end
 
+function __prm_load --description "Helper function to source common files from '~/.prm-fish/.common/'."
+    if test (count $argv) -lt 1
+        echo "No script specified."
+        return 1
+    end
+
+    set -l script_file $prm_fish_dir/.common/$argv[1].fish
+
+    if test -e $script_file
+        . $script_file
+    else
+        echo "Could not load user script '$script_file'."
+        return 2
+    end
+end
+
 function __prm_help --description "Prints help message"
     echo "Usage: prm [options] ..."
     echo "Options:"
@@ -295,6 +315,7 @@ function __prm_help --description "Prints help message"
     echo "  copy <old> <new>         Copies a project."
     echo "  edit <project name>...   Edit project(s)."
     echo "  list                     List all projects."
+    echo "  load                     Helper function to source common files from '~/.prm-fish/.common/'."
     echo "  remove <project name>... Remove project(s)."
     echo "  rename <old> <new>       Rename project."
     echo "  start <project name>     Start project. Stops active project if any."
@@ -336,8 +357,11 @@ function __prmcompletion_setup --on-event prm_setup
 
     # add completion for subcommands
     for sc in (functions -a | sed -n '/__prm_/{s///g;p;}')
-        set -l helptext (functions "__prm_$sc" | head -n 1 | sed -E "s|.*'(.*)'.*|\1|")
-        complete -x -c prm -n '__prmcompletion_needs_command' -a $sc -d $helptext
+        if not test $sc = "load"
+            # Skip 'load' in autocompletion
+            set -l helptext (functions "__prm_$sc" | head -n 1 | sed -E "s|.*'(.*)'.*|\1|")
+            complete -x -c prm -n '__prmcompletion_needs_command' -a $sc -d $helptext
+        end
     end
 
     complete -x -c prm -n '__prmcompletion_using_command edit' -a "(prm list)"
