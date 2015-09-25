@@ -260,6 +260,7 @@ function __prm_start --description "Start project"
 
     echo "Starting project $project_name."
     . $project_dir/start.fish
+    set -g PRM_FISH_ACTIVE_PROJECT $project_name
 end
 
 function __prm_stop --description "Stop active project"
@@ -288,6 +289,7 @@ function __prm_stop --description "Stop active project"
     functions -e _old_fish_prompt
 
     . $project_dir/stop.fish
+    set -e PRM_FISH_ACTIVE_PROJECT
     return 0 # No idea why this is needed
 end
 
