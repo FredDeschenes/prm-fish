@@ -77,6 +77,11 @@ function __prm_add --description "Creates new project(s)"
 
 " > $project_dir/stop.fish
 
+        if not set -q EDITOR
+            echo "'EDITOR' variable not set. You rill not be able to add, copy or edit projects."
+            return 2
+        end
+
         eval $EDITOR $project_dir/start.fish; and eval $EDITOR $project_dir/stop.fish
 
         echo "Added project $project_name."
@@ -93,6 +98,12 @@ function __prm_edit --description "Edit existing project(s)"
         set -l project_dir "$prm_fish_dir/$project_name"
 
         if test -d $project_dir
+
+            if not set -q EDITOR
+                echo "'EDITOR' variable not set. You rill not be able to add, copy or edit projects."
+                return 2
+            end
+
             eval $EDITOR $project_dir/start.fish; and eval $EDITOR $project_dir/stop.fish
             echo "Edited project $project_name."
         else
