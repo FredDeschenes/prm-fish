@@ -35,6 +35,10 @@ function __prmcleanup --on-event __prm_clean_process
     rm -f $prm_fish_dir/.path-$argv[1].tmp
 end
 
+function __prm_cd --description "cd into prm-fish directory"
+    cd $prm_fish_dir
+end
+
 function __prm_active --description "List active projects and shell process id"
     cd $prm_fish_dir
     for instance in (ls .active*)
