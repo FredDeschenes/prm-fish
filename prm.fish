@@ -259,10 +259,10 @@ function __prm_start --description "Start project"
 
     echo $project_name > $active_file
 
-    # Save fish_prompt as _old_fish_prompt
+    # Save fish_prompt as _prompt_before_prm
     # Technique found in virtualenv
     . ( begin
-            printf "function _old_fish_prompt\n\t#"
+            printf "function _prompt_before_prm\n\t#"
             functions fish_prompt
         end | psub )
 
@@ -270,7 +270,7 @@ function __prm_start --description "Start project"
     function fish_prompt
         set -l pid %self
         set -l active_file "$prm_fish_dir/.active-$pid.tmp"
-        printf "[%s] %s" (cat $active_file) (_old_fish_prompt)
+        printf "[%s] %s" (cat $active_file) (_prompt_before_prm)
     end
 
     echo "Starting project $project_name."
@@ -299,9 +299,9 @@ function __prm_stop --description "Stop active project"
     # Reset old prompt
     . ( begin
                 printf "function fish_prompt\n\t#"
-                functions _old_fish_prompt
+                functions _prompt_before_prm
             end | psub )
-    functions -e _old_fish_prompt
+    functions -e _prompt_before_prm
 
     . $project_dir/stop.fish
     set -e PRM_FISH_ACTIVE_PROJECT
