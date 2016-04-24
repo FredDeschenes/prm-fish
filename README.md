@@ -6,10 +6,8 @@ Add the following to your config.fish
 ```sh
 # Load prm-fish
 . /path/to/prm.fish
-# Enable prm-fish completions
-emit prm_setup
 ```
-Although copying/symlinking ```prm.fish``` to ```~/.config/fish/functions/``` will work, autocompletions will not be available.
+Although copying/symlinking ```prm.fish``` to ```~/.config/fish/functions/``` will work, autocompletions will not be available unless ```source```d.
 
 ## Differences
 - Works on fish (who would have thought?)

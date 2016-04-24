@@ -352,38 +352,36 @@ end
 
 # Autocompletion setup
 # Based on virtualfish https://github.com/adambrenecki/virtualfish
-function __prmcompletion_setup --on-event prm_setup
-    function __prmcompletion_needs_command
-        set cmd (commandline -opc)
-            if test (count $cmd) -eq 1 -a $cmd[1] = 'prm'
+function __prmcompletion_needs_command
+    set cmd (commandline -opc)
+        if test (count $cmd) -eq 1 -a $cmd[1] = 'prm'
+        return 0
+    end
+    return 1
+end
+
+function __prmcompletion_using_command
+    echo "Using command $argv"
+    set cmd (commandline -opc)
+    if test (count $cmd) -gt 1
+        if test $argv[1] = $cmd[2]
             return 0
         end
-        return 1
     end
-
-    function __prmcompletion_using_command
-        echo "Using command $argv"
-        set cmd (commandline -opc)
-        if test (count $cmd) -gt 1
-            if test $argv[1] = $cmd[2]
-                return 0
-            end
-        end
-        return 1
-    end
-
-    # add completion for subcommands
-    for sc in (functions -a | sed -n '/__prm_/{s///g;p;}')
-        if not test $sc = "load"
-            # Skip 'load' in autocompletion
-            set -l helptext (functions "__prm_$sc" | head -n 1 | sed -E "s|.*'(.*)'.*|\1|")
-            complete -x -c prm -n '__prmcompletion_needs_command' -a $sc -d $helptext
-        end
-    end
-
-    complete -x -c prm -n '__prmcompletion_using_command edit' -a "(prm list)"
-    complete -x -c prm -n '__prmcompletion_using_command remove' -a "(prm list)"
-    complete -x -c prm -n '__prmcompletion_using_command copy' -a "(prm list)"
-    complete -x -c prm -n '__prmcompletion_using_command rename' -a "(prm list)"
-    complete -x -c prm -n '__prmcompletion_using_command start' -a "(prm list)"
+    return 1
 end
+
+# add completion for subcommands
+for sc in (functions -a | sed -n '/__prm_/{s///g;p;}')
+    if not test $sc = "load"
+        # Skip 'load' in autocompletion
+        set -l helptext (functions "__prm_$sc" | head -n 1 | sed -E "s|.*'(.*)'.*|\1|")
+        complete -x -c prm -n '__prmcompletion_needs_command' -a $sc -d $helptext
+    end
+end
+
+complete -x -c prm -n '__prmcompletion_using_command edit' -a "(prm list)"
+complete -x -c prm -n '__prmcompletion_using_command remove' -a "(prm list)"
+complete -x -c prm -n '__prmcompletion_using_command copy' -a "(prm list)"
+complete -x -c prm -n '__prmcompletion_using_command rename' -a "(prm list)"
+complete -x -c prm -n '__prmcompletion_using_command start' -a "(prm list)"
