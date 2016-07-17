@@ -117,13 +117,13 @@ function __prm_edit --description "Edit existing project(s)"
 end
 
 function __prm_list --description "List existing projects"
-    if not test (find $prm_fish_dir -type d | wc -l) -gt 1
-        echo "No projects exist."
-    else
+    if test -d "$prm_fish_dir"
         # set -l pid (echo $instance | sed 's/.active-\([0-9]*\).tmp/\1/')
         for d in (ls -d $prm_fish_dir/*)
             echo (basename $d)
         end
+    else
+        echo "No projects exist."
     end
 end
 
